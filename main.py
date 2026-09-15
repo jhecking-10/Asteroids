@@ -1,5 +1,7 @@
 import pygame
 
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from logger import log_state
 from player import Player
@@ -9,10 +11,12 @@ def game_loop():
     pygame.init()
     clock = pygame.time.Clock()
     dt: float = 0.0 # delta time stores decimal number of seconds
+    font = pygame.font.Font(None, 34)
 
-    updatable, drawable = group()
-    create_player()
+    updatable, drawable, asteroid = group()
     game_screen = create_screen()
+    create_asteroid_field()
+    create_player()
     
     while True:
         log_state()
@@ -23,10 +27,15 @@ def game_loop():
                 
         fill_screen(game_screen)
         updatable.update(dt)
+
+        # Display number of asteroids spawned in
+        asteroid_count = len(asteroid)
+        text_surface = font.render(f"Asteroids spawned: {asteroid_count}", True, "white")
+        game_screen.blit(text_surface, (10, 10))
         
         for object in drawable:
             draw(object, game_screen)
-        pygame.display.flip()
+        pygame.display.flip()  
         
         dt = clock.tick(60) / 1000
 
@@ -39,11 +48,17 @@ def create_player():
 def create_screen():
     return pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+def create_asteroid_field():
+    AsteroidField()
+
 def group():
-    updatables = pygame.sprite.Group()
-    drawables = pygame.sprite.Group()
-    Player.containers = (updatables, drawables)
-    return updatables, drawables
+    updatable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+    asteroid = pygame.sprite.Group()
+    Player.containers = (updatable, drawable)
+    Asteroid.containers = (asteroid, updatable, drawable)
+    AsteroidField.containers = (updatable)
+    return updatable, drawable, asteroid
     
 def draw(object, screen):
     object.draw(screen)
