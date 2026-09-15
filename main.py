@@ -9,8 +9,9 @@ def game_loop():
     pygame.init()
     clock = pygame.time.Clock()
     dt: float = 0.0 # delta time stores decimal number of seconds
-    
-    player_1 = create_player()
+
+    updatable, drawable = group()
+    create_player()
     game_screen = create_screen()
     
     while True:
@@ -21,7 +22,10 @@ def game_loop():
                 return
                 
         fill_screen(game_screen)
-        draw_player(player_1, game_screen)
+        updatable.update(dt)
+        
+        for object in drawable:
+            draw(object, game_screen)
         pygame.display.flip()
         
         dt = clock.tick(60) / 1000
@@ -30,13 +34,19 @@ def fill_screen(screen):
     screen.fill("black")
 
 def create_player():
-    return Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
 def create_screen():
     return pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-def draw_player(player, screen):
-    player.draw(screen)
+def group():
+    updatables = pygame.sprite.Group()
+    drawables = pygame.sprite.Group()
+    Player.containers = (updatables, drawables)
+    return updatables, drawables
+    
+def draw(object, screen):
+    object.draw(screen)
 
 def main():
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
