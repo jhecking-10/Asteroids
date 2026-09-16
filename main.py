@@ -39,11 +39,17 @@ def game_loop():
                 print("Game over!")
                 sys.exit()
 
+        for a in asteroids:
+            for shot in shots:
+                if Shot.collides_with(shot, a):
+                    log_event("asteroid_shot")
+                    shot.kill()
+                    a.kill()
+
         # Display number of shots fired and number of asteroids spawned in
         # Will later use to calculate accuracy percentage
         asteroid_count = len(asteroids)
-        shots_fired = len(shots)
-        text_surface = font.render(f"Asteroids spawned: {asteroid_count} | Shots fired: {shots_fired}", True, "white")
+        text_surface = font.render(f"Asteroids present: {asteroid_count} | Shots fired: {player.shots_fired}", True, "white")
         game_screen.blit(text_surface, (10, 10))
         
         for object in drawable:
