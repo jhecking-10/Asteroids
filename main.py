@@ -44,7 +44,7 @@ def game_loop():
                 if Shot.collides_with(shot, a):
                     log_event("asteroid_shot")
                     shot.kill()
-                    a.kill()
+                    a.split()
 
         # Display number of shots fired and number of asteroids spawned in
         # Will later use to calculate accuracy percentage
