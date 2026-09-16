@@ -15,6 +15,7 @@ class AsteroidField(pygame.sprite.Sprite):
     def __init__(self) -> None:
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.spawn_timer = 0.0
+        self.asteroid_count = 0
 
         self.edges: list[Edge] = [
             (
@@ -42,6 +43,7 @@ class AsteroidField(pygame.sprite.Sprite):
     def spawn(
         self, radius: float, position: pygame.Vector2, velocity: pygame.Vector2
     ) -> None:
+        self.asteroid_count += 1
         asteroid = Asteroid(position.x, position.y, radius)
         asteroid.velocity = velocity
 
