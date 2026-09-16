@@ -7,6 +7,7 @@ from asteroidfield import AsteroidField
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from logger import log_event, log_state
 from player import Player
+from shot import Shot
 
 
 def game_loop():
@@ -15,7 +16,7 @@ def game_loop():
     dt: float = 0.0 # delta time stores decimal number of seconds
     font = pygame.font.Font(None, 34)
 
-    updatable, drawable, asteroids = group()
+    updatable, drawable, asteroids, shots = group()
     game_screen = create_screen()
     create_asteroid_field()
     player = create_player()
@@ -29,6 +30,7 @@ def game_loop():
                 
         fill_screen(game_screen)
         updatable.update(dt)
+        player.shot_cooldown -= dt
 
         # Check if player collides with any asteroid
         for a in asteroids:
@@ -37,9 +39,11 @@ def game_loop():
                 print("Game over!")
                 sys.exit()
 
-        # Display number of asteroids spawned in
+        # Display number of shots fired and number of asteroids spawned in
+        # Will later use to calculate accuracy percentage
         asteroid_count = len(asteroids)
-        text_surface = font.render(f"Asteroids spawned: {asteroid_count}", True, "white")
+        shots_fired = len(shots)
+        text_surface = font.render(f"Asteroids spawned: {asteroid_count} | Shots fired: {shots_fired}", True, "white")
         game_screen.blit(text_surface, (10, 10))
         
         for object in drawable:
@@ -64,10 +68,12 @@ def group():
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroid = pygame.sprite.Group()
+    shot = pygame.sprite.Group()
     Player.containers = (updatable, drawable)
     Asteroid.containers = (asteroid, updatable, drawable)
     AsteroidField.containers = (updatable)
-    return updatable, drawable, asteroid
+    Shot.containers = (shot, updatable, drawable)
+    return updatable, drawable, asteroid, shot
     
 def draw(object, screen):
     object.draw(screen)
